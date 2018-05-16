@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="theme-color" content="#ffffff">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<meta http-equiv="Access-Control-Allow-Methods" content="GET">
+	<meta http-equiv="Access-Control-Allow-Headers" content="*">
+	<title>
+		審神者履歴書簡単制作
+	</title>
+    <style>
+      #c1 {
+        background: #666;
+      }
+    </style>
+    <script type="text/javascript" src="./js/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+
+	<script>
+		$(function() {
+		  //フォームの値に反応
+		  $('input').change(function() {
+		  	draw();
+		  	save_image();
+		  });
+		});
+		function save_image() {
+		  var canvas = document.getElementById('c1');
+		  var url = canvas.toDataURL("image/png");
+		  console.log(url);
+		}
+		function draw() {
+		  var canvas = document.getElementById('c1');
+		  if ( ! canvas || ! canvas.getContext ) { return false; }
+		  var ctx = canvas.getContext('2d');
+
+		  /* Imageオブジェクトを生成 */
+		  var img = new Image();
+		  // img.src = "https://d-cache.microad.jp/images/13786/2477250_1.png";
+		  img.src = "./img/saniwa.jpg";
+		  img.crossOrigin = 'anonymous';
+
+		   img.onload = function() {
+     	   		ctx.drawImage(img, 0, 0,1022,1448);
+				ctx.font= 'bold 40px Century Gothic';
+				ctx.strokeStyle = '#00A3D9';
+				ctx.lineWidth = 2; 
+				ctx.lineJoin = 'round';
+				ctx.fillStyle = '#fff';
+				// ctx.strokeText('strokeText(text,x,y[,maxWidth])',15,115,520);
+
+				/************/
+				/*プロフィール*/
+				/************/
+				//twitter名/審神者名
+				ctx.strokeText($('#name').val(),200,220,250);
+				// ctx.strokeText('ゆう',200,220,250);
+				//性別
+				ctx.strokeText('男',550,220,200);
+				//Lv.
+				ctx.strokeText($('#lv').val(),690,220,200);
+
+				//就任年
+				ctx.strokeText('2018',200,290,70);
+				//就任月
+				ctx.strokeText('4',320,290,70);
+				//就任日
+				ctx.strokeText('22',420,290,70);
+				
+				//本拠/サーバー
+				ctx.strokeText('22',420,290,70);
+
+				//全振取得有
+				ctx.fillText('✔️',530,690);
+				//未所有に丸
+				ctx.arc(350,690,20,0,Math.PI*2,false);
+				ctx.beginPath();
+				ctx.stroke();
+				//所有に丸
+				ctx.beginPath();
+				ctx.arc(430,690,20,0,Math.PI*2,false);
+				ctx.stroke();				
+     		}
+     		console.log(canvas.toDataURL("./sample.png"));
+			// ctx1.strokeText('描きたい文字列',10,30);
+		}
+		onload = function() {
+			draw();
+		};
+	</script>
+</head>
+<body>
+	<div class="container">
+		<form>
+			<input type="text" id="name">
+			<input type="number" id="lv">
+		</form>
+		<canvas id="c1" width="1022" height="1448"></canvas>		
+	</div>
+</body>
+</html>

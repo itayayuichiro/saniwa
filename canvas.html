@@ -14,6 +14,16 @@
 		審神者履歴書簡単制作
 	</title>
     <style>
+		body {
+		    padding-top: 54px;
+		}
+
+		@media (min-width: 992px) {
+		    body {
+		        padding-top: 56px;
+		    }
+		}
+
       #c1 {
         background: #666;
       }
@@ -35,6 +45,7 @@
 		  console.log(url);
 		}
 		function draw() {
+			$('#contents').append('<canvas id="c1" width="1022" height="1448"></canvas>');
 		  var canvas = document.getElementById('c1');
 		  if ( ! canvas || ! canvas.getContext ) { return false; }
 		  var ctx = canvas.getContext('2d');
@@ -84,23 +95,39 @@
 				//所有に丸
 				ctx.beginPath();
 				ctx.arc(430,690,20,0,Math.PI*2,false);
-				ctx.stroke();				
+				ctx.stroke();
+				document.getElementById('canvas_image').src = canvas.toDataURL("./sample.png");
+//	     		var url = canvas.toDataURL("./sample.png");
+				$('#c1').remove();
      		}
-     		console.log(canvas.toDataURL("./sample.png"));
-			// ctx1.strokeText('描きたい文字列',10,30);
 		}
-		onload = function() {
-			draw();
-		};
+		// onload = function() {
+		// 	draw();
+		// };
 	</script>
 </head>
 <body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+	  <div class="container">
+	    <a class="navbar-brand" href="#">審神者履歴書簡単制作</a>
+	  </div>
+	</nav>
+
 	<div class="container">
-		<form>
-			<input type="text" id="name">
-			<input type="number" id="lv">
-		</form>
-		<canvas id="c1" width="1022" height="1448"></canvas>		
+			 <div class="form-group">
+			    <label for="exampleInputEmail1">twitter名/審神者名</label>
+			    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter email">
+			  </div>
+			  <div class="form-group">
+			    <label for="exampleInputPassword1">Lv.</label>
+    			<input type="number" id="lv" class="form-control" >
+			  </div>
+			  <button type="submit" class="btn btn-primary" onclick="draw()">作成</button>
+		<div id="contents">
+			
+		</div>
+		<img id="canvas_image">
+		<!-- <canvas id="c1" width="1022" height="1448"></canvas>		 -->
 	</div>
 </body>
 </html>

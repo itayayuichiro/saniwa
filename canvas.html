@@ -11,7 +11,7 @@
 	<meta http-equiv="Access-Control-Allow-Methods" content="GET">
 	<meta http-equiv="Access-Control-Allow-Headers" content="*">
 	<title>
-		審神者履歴書簡単制作
+		審神者履歴書メーカー
 	</title>
     <style>
 		body {
@@ -32,18 +32,26 @@
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
 
 	<script>
+		var thumbnail_url = "";
 		$(function() {
-		  //フォームの値に反応
-		  $('input').change(function() {
-		  	draw();
-		  	save_image();
-		  });
+			$('#uploadFile').change(function(){
+			  if (this.files.length > 0) {
+			    // 選択されたファイル情報を取得
+			    var file = this.files[0];
+			    
+			    // readerのresultプロパティに、データURLとしてエンコードされたファイルデータを格納
+			    var reader = new FileReader();
+			    reader.readAsDataURL(file);
+			    
+			    reader.onload = function() {
+			    	thumbnail_url = reader.result;
+			      // $('#thumbnail').attr('src', reader.result );
+			    }
+			  }
+			});		 
+
 		});
-		function save_image() {
-		  var canvas = document.getElementById('c1');
-		  var url = canvas.toDataURL("image/png");
-		  console.log(url);
-		}
+
 		function draw() {
 			$('#contents').append('<canvas id="c1" width="1022" height="1448"></canvas>');
 		  var canvas = document.getElementById('c1');
@@ -72,20 +80,54 @@
 				ctx.strokeText($('#name').val(),200,220,250);
 				// ctx.strokeText('ゆう',200,220,250);
 				//性別
-				ctx.strokeText('男',550,220,200);
+				ctx.strokeText($('#gender').val(),550,220,200);
 				//Lv.
 				ctx.strokeText($('#lv').val(),690,220,200);
 
 				//就任年
-				ctx.strokeText('2018',200,290,70);
+				ctx.strokeText($('#date').val().split('-')[0],200,290,70);
 				//就任月
-				ctx.strokeText('4',320,290,70);
+				ctx.strokeText($('#date').val().split('-')[1],320,290,70);
 				//就任日
-				ctx.strokeText('22',420,290,70);
-				
+				ctx.strokeText($('#date').val().split('-')[2],420,290,70);
 				//本拠/サーバー
-				ctx.strokeText('22',420,290,70);
+				ctx.strokeText($('#server'),800,290,70);
+				//初期刀
+				ctx.strokeText($('#syokitou').val(),200,350,70);
+				//初レア
+				ctx.strokeText($('#syokitou').val(),800,350,70);
+				//近侍
+				ctx.strokeText($('#syokitou'),200,400,70);
 
+				/************/
+				/**部隊編成**/
+				/************/
+				//第何部隊か
+				ctx.strokeText(1,180,450,70);
+				//1振り目
+				ctx.strokeText($('#lv').val(),130,520,200);
+				ctx.strokeText($('#syokitou').val(),200,520,70);
+				//2振り目
+				ctx.strokeText($('#lv').val(),560,520,200);
+				ctx.strokeText($('#syokitou').val(),700,520,70);
+				//3振り目
+				ctx.strokeText($('#lv').val(),130,580,200);
+				ctx.strokeText($('#syokitou').val(),200,580,70);
+				//4振り目
+				ctx.strokeText($('#lv').val(),560,580,200);
+				ctx.strokeText($('#syokitou').val(),700,580,70);
+				//5振り目
+				ctx.strokeText($('#lv').val(),130,640,200);
+				ctx.strokeText($('#syokitou').val(),200,640,70);
+				//6振り目
+				ctx.strokeText($('#lv').val(),560,640,200);
+				ctx.strokeText($('#syokitou').val(),700,640,70);
+				
+
+
+				/************/
+				/**レア刀剣**/
+				/************/
 				//全振取得有
 				ctx.fillText('✔️',530,690);
 				//未所有に丸
@@ -96,32 +138,192 @@
 				ctx.beginPath();
 				ctx.arc(430,690,20,0,Math.PI*2,false);
 				ctx.stroke();
-				document.getElementById('canvas_image').src = canvas.toDataURL("./sample.png");
+				//刀剣
+				for (var i = $('.rare').length - 1; i >= 0; i--) {
+					if ($('.rare')[i].checked) {
+						ctx.beginPath();
+						ctx.moveTo($('.rare')[i]['value'].split(',')[0],$('.rare')[i]['value'].split(',')[1]);
+						ctx.lineTo($('.rare')[i]['value'].split(',')[2],$('.rare')[i]['value'].split(',')[3]);
+						ctx.stroke();						
+					}
+				}
+
+
+				//プロフ画像
+				var img2 = new Image();
+				img2.src = thumbnail_url;
+				img2.crossOrigin = 'anonymous';
+				img2.onload = function() {
+	     	   		ctx.drawImage(img2, 795, 40,150,180);
+//					document.getElementById('canvas_image').src = canvas.toDataURL("./sample.png");
+				}
+					document.getElementById('canvas_image').src = canvas.toDataURL("./sample.png");
+
 //	     		var url = canvas.toDataURL("./sample.png");
 				$('#c1').remove();
      		}
 		}
-		// onload = function() {
-		// 	draw();
-		// };
 	</script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
 	  <div class="container">
-	    <a class="navbar-brand" href="#">審神者履歴書簡単制作</a>
+	    <a class="navbar-brand" href="#">審神者履歴書メーカー</a>
 	  </div>
 	</nav>
 
 	<div class="container">
 			 <div class="form-group">
-			    <label for="exampleInputEmail1">twitter名/審神者名</label>
-			    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter email">
+			    <label>twitter名/審神者名</label>
+			    <input type="text" class="form-control" id="name">
+			  </div>
+			 <div class="form-group">
+			    <label>性別</label>
+			    <select class="form-control" id="gender">
+			      <option value="♂">♂</option>
+			      <option value="♀">♀</option>
+			      <option value="男">男</option>
+			      <option value="女">女</option>
+			    </select>
 			  </div>
 			  <div class="form-group">
-			    <label for="exampleInputPassword1">Lv.</label>
+			    <label>Lv.</label>
     			<input type="number" id="lv" class="form-control" >
 			  </div>
+			 <div class="form-group">
+			    <label>就任年</label>
+			    <input type="date" class="form-control" id="date">
+			  </div>
+			 <div class="form-group">
+			    <label>初期刀</label>
+			    <select class="form-control" id="syokitou"><option value="加州清光">加州清光</option><option value="歌仙兼定">歌仙兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option>	
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>本拠/サーバー</label>
+			    <select class="form-control" id="server">
+				    <option value="備前国">備前国</option><option value="相模国">相模国</option><option value="山城国">山城国</option><option value="大和国">大和国</option><option value="美濃国">美濃国</option><option value="備中国">備中国</option><option value="豊後国">豊後国</option><option value="薩摩国">薩摩国</option><option value="備後国">備後国</option><option value="陸奥国">陸奥国</option><option value="筑前国">筑前国</option><option value="石見国">石見国</option><option value="伯耆国">伯耆国</option><option value="越中国">越中国</option><option value="肥後国">肥後国</option><option value="加賀国">加賀国</option><option value="周防国">周防国</option><option value="豊前国">豊前国</option><option value="肥前国">肥前国</option><option value="越前国">越前国</option><option value="武蔵国">武蔵国</option>
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>近侍</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+
+
+			 <div class="form-group">
+			    第<input type="number" class="form-control" id="name">部隊
+			  </div>
+
+			 <div class="form-group">
+			    <label>1.</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>2.</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>3.</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>4.</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>5.</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+			 <div class="form-group">
+			    <label>6.</label>
+			    <select class="form-control" id="kinji"><option value="三日月宗近">三日月宗近</option><option value="小狐丸">小狐丸</option><option value="石切丸">石切丸</option><option value="岩融">岩融</option><option value="今剣">今剣</option><option value="大典太光世">大典太光世</option><option value="ソハヤノツルキ">ソハヤノツルキ</option><option value="数珠丸恒次">数珠丸恒次</option><option value="にっかり青江">にっかり青江</option><option value="鳴狐">鳴狐</option><option value="一期一振">一期一振</option><option value="鯰尾藤四郎">鯰尾藤四郎</option><option value="骨喰藤四郎">骨喰藤四郎</option><option value="平野藤四郎">平野藤四郎</option><option value="厚藤四郎">厚藤四郎</option><option value="後藤藤四郎">後藤藤四郎</option><option value="信濃藤四郎">信濃藤四郎</option><option value="前田藤四郎">前田藤四郎</option><option value="秋田藤四郎">秋田藤四郎</option><option value="博多藤四郎">博多藤四郎</option><option value="乱藤四郎">乱藤四郎</option><option value="五虎退">五虎退</option><option value="薬研藤四郎">薬研藤四郎</option><option value="包丁藤四郎">包丁藤四郎</option><option value="大包平">大包平</option><option value="鶯丸">鶯丸</option><option value="明石国行">明石国行</option><option value="蛍丸">蛍丸</option><option value="愛染国俊">愛染国俊</option><option value="千子村正">千子村正</option><option value="蜻蛉切">蜻蛉切</option><option value="物吉貞宗">物吉貞宗</option><option value="太鼓鐘貞宗">太鼓鐘貞宗</option><option value="亀甲貞宗">亀甲貞宗</option><option value="燭台切光忠">燭台切光忠</option><option value="大般若長光">大般若長光</option><option value="小竜景光">小竜景光</option><option value="江雪左文字">江雪左文字</option><option value="宗三左文字">宗三左文字</option><option value="小夜左文字">小夜左文字</option><option value="加州清光">加州清光</option><option value="大和守安定">大和守安定</option><option value="歌仙兼定">歌仙兼定</option><option value="和泉守兼定">和泉守兼定</option><option value="陸奥守吉行">陸奥守吉行</option><option value="山姥切国広">山姥切国広</option><option value="山伏国広">山伏国広</option><option value="堀川国広">堀川国広</option><option value="蜂須賀虎徹">蜂須賀虎徹</option><option value="浦島虎徹">浦島虎徹</option><option value="長曽祢虎徹">長曽祢虎徹</option><option value="髭切">髭切</option><option value="膝丸">膝丸</option><option value="大倶利伽羅">大倶利伽羅</option><option value="へし切長谷部">へし切長谷部</option><option value="不動行光">不動行光</option><option value="獅子王">獅子王</option><option value="小烏丸">小烏丸</option><option value="同田貫正国">同田貫正国</option><option value="鶴丸国永">鶴丸国永</option><option value="太郎太刀">太郎太刀</option><option value="次郎太刀">次郎太刀</option><option value="日本号">日本号</option><option value="御手杵">御手杵</option><option value="巴形薙刀">巴形薙刀</option><option value="毛利藤四郎">毛利藤四郎</option><option value="篭手切江">篭手切江</option><option value="謙信景光">謙信景光</option><option value="小豆長光">小豆長光</option><option value="日向正宗">日向正宗</option><option value="静形薙刀">静形薙刀</option><option value="南泉一文字">南泉一文字</option>
+				</select>
+			  </div>
+			<div class="checkbox">
+			    <label>レア刀剣所持状況</label>
+			    <br>
+				<label><input type="checkbox" class="rare" value="80,738,180,738">三日月宗近</label>
+				<label><input type="checkbox" class="rare" value="200,738,250,738">小狐丸</label>
+				<label><input type="checkbox" class="rare" value="260,738,315,738">岩融</label>
+				<label><input type="checkbox" class="rare" value="330,738,425,738"">大典太光世</label>
+				<label><input type="checkbox" class="rare" value="445,738,555,738">ソハヤノツルキ</label>
+				<label><input type="checkbox" class="rare" value="数珠丸恒次">数珠丸恒次</label>
+				<label><input type="checkbox" class="rare" value="にっかり青江">にっかり青江</label>
+				<label><input type="checkbox" class="rare" value="鳴狐">鳴狐</label>
+				<label><input type="checkbox" class="rare" value="一期一振">一期一振</label>
+				<label><input type="checkbox" class="rare" value="鯰尾藤四郎">鯰尾藤四郎</label>
+				<label><input type="checkbox" class="rare" value="骨喰藤四郎">骨喰藤四郎</label>
+				<label><input type="checkbox" class="rare" value="平野藤四郎">平野藤四郎</label>
+				<label><input type="checkbox" class="rare" value="厚藤四郎">厚藤四郎</label>
+				<label><input type="checkbox" class="rare" value="後藤藤四郎">後藤藤四郎</label>
+				<label><input type="checkbox" class="rare" value="信濃藤四郎">信濃藤四郎</label>
+				<label><input type="checkbox" class="rare" value="前田藤四郎">前田藤四郎</label>
+				<label><input type="checkbox" class="rare" value="秋田藤四郎">秋田藤四郎</label>
+				<label><input type="checkbox" class="rare" value="博多藤四郎">博多藤四郎</label>
+				<label><input type="checkbox" class="rare" value="乱藤四郎">乱藤四郎</label>
+				<label><input type="checkbox" class="rare" value="五虎退">五虎退</label>
+				<label><input type="checkbox" class="rare" value="薬研藤四郎">薬研藤四郎</label>
+				<label><input type="checkbox" class="rare" value="包丁藤四郎">包丁藤四郎</label>
+				<label><input type="checkbox" class="rare" value="大包平">大包平</label>
+				<label><input type="checkbox" class="rare" value="鶯丸">鶯丸</label>
+				<label><input type="checkbox" class="rare" value="明石国行">明石国行</label>
+				<label><input type="checkbox" class="rare" value="蛍丸">蛍丸</label>
+				<label><input type="checkbox" class="rare" value="愛染国俊">愛染国俊</label>
+				<label><input type="checkbox" class="rare" value="千子村正">千子村正</label>
+				<label><input type="checkbox" class="rare" value="蜻蛉切">蜻蛉切</label>
+				<label><input type="checkbox" class="rare" value="物吉貞宗">物吉貞宗</label>
+				<label><input type="checkbox" class="rare" value="太鼓鐘貞宗">太鼓鐘貞宗</label>
+				<label><input type="checkbox" class="rare" value="亀甲貞宗">亀甲貞宗</label>
+				<label><input type="checkbox" class="rare" value="燭台切光忠">燭台切光忠</label>
+				<label><input type="checkbox" class="rare" value="大般若長光">大般若長光</label>
+				<label><input type="checkbox" class="rare" value="小竜景光">小竜景光</label>
+				<label><input type="checkbox" class="rare" value="江雪左文字">江雪左文字</label>
+				<label><input type="checkbox" class="rare" value="宗三左文字">宗三左文字</label>
+				<label><input type="checkbox" class="rare" value="小夜左文字">小夜左文字</label>
+				<label><input type="checkbox" class="rare" value="加州清光">加州清光</label>
+				<label><input type="checkbox" class="rare" value="大和守安定">大和守安定</label>
+				<label><input type="checkbox" class="rare" value="歌仙兼定">歌仙兼定</label>
+				<label><input type="checkbox" class="rare" value="和泉守兼定">和泉守兼定</label>
+				<label><input type="checkbox" class="rare" value="陸奥守吉行">陸奥守吉行</label>
+				<label><input type="checkbox" class="rare" value="山姥切国広">山姥切国広</label>
+				<label><input type="checkbox" class="rare" value="山伏国広">山伏国広</label>
+				<label><input type="checkbox" class="rare" value="堀川国広">堀川国広</label>
+				<label><input type="checkbox" class="rare" value="蜂須賀虎徹">蜂須賀虎徹</label>
+				<label><input type="checkbox" class="rare" value="浦島虎徹">浦島虎徹</label>
+				<label><input type="checkbox" class="rare" value="長曽祢虎徹">長曽祢虎徹</label>
+				<label><input type="checkbox" class="rare" value="髭切">髭切</label>
+				<label><input type="checkbox" class="rare" value="膝丸">膝丸</label>
+				<label><input type="checkbox" class="rare" value="大倶利伽羅">大倶利伽羅</label>
+				<label><input type="checkbox" class="rare" value="へし切長谷部">へし切長谷部</label>
+				<label><input type="checkbox" class="rare" value="不動行光">不動行光</label>
+				<label><input type="checkbox" class="rare" value="獅子王">獅子王</label>
+				<label><input type="checkbox" class="rare" value="小烏丸">小烏丸</label>
+				<label><input type="checkbox" class="rare" value="同田貫正国">同田貫正国</label>
+				<label><input type="checkbox" class="rare" value="鶴丸国永">鶴丸国永</label>
+				<label><input type="checkbox" class="rare" value="太郎太刀">太郎太刀</label>
+				<label><input type="checkbox" class="rare" value="次郎太刀">次郎太刀</label>
+				<label><input type="checkbox" class="rare" value="日本号">日本号</label>
+				<label><input type="checkbox" class="rare" value="御手杵">御手杵</label>
+				<label><input type="checkbox" class="rare" value="巴形薙刀">巴形薙刀</label>
+				<label><input type="checkbox" class="rare" value="毛利藤四郎">毛利藤四郎</label>
+				<label><input type="checkbox" class="rare" value="篭手切江">篭手切江</label>
+				<label><input type="checkbox" class="rare" value="謙信景光">謙信景光</label>
+				<label><input type="checkbox" class="rare" value="小豆長光">小豆長光</label>
+				<label><input type="checkbox" class="rare" value="日向正宗">日向正宗</label>
+				<label><input type="checkbox" class="rare" value="静形薙刀">静形薙刀</label>
+				<label><input type="checkbox" class="rare" value="南泉一文字">南泉一文字</label>
+			</div>
+			<input id="uploadFile" name="image" type="file" accept="image/*" capture="camera"/>
+
+
+
 			  <button type="submit" class="btn btn-primary" onclick="draw()">作成</button>
 		<div id="contents">
 			
